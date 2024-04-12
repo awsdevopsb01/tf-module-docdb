@@ -41,6 +41,7 @@ resource "aws_docdb_cluster_parameter_group" "cpg" {
     value = "enabled"
   }
 }
+
 resource "aws_docdb_cluster" "docdb" {
   cluster_identifier      = "${var.name}-${var.env}-docdb"
   engine                  = "docdb"
@@ -57,4 +58,11 @@ resource "aws_docdb_cluster" "docdb" {
   kms_key_id = var.kms_arn
   port = var.port_no
   tags = merge(var.tags, {Name="${var.name}-${var.env}" })
+}
+
+resource "aws_docdb_cluster_instance" "docdb_cluster_instance" {
+  count              = var.instance_count
+  identifier         = "${var.name}-${var.env}-docdb-instance"
+  cluster_identifier = aws_docdb_cluster.docdb.id
+  instance_class     = var.instance_class
 }

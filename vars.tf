@@ -11,3 +11,5 @@ variable "tags" {}
 variable "allow_db_cidr" {}
 variable "subnets" {}
 variable "vpc_id" {}
+variable "instance_count" {}
+variable "instance_class" {}
