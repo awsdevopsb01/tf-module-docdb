@@ -26,20 +26,14 @@ resource "aws_security_group" "main" {
     ipv6_cidr_blocks = ["::/0"]
   }
 
-  tags = {
-    Name = "${var.name}-${var.env}-sg"
-  }
+  tags = merge(var.tags, {Name="${var.name}-${var.env}" })
 }
 
 resource "aws_docdb_cluster_parameter_group" "cpg" {
   family      = "docdb4.0"
   name        = "${var.name}-${var.env}-pg"
   description = "${var.name}-${var.env}-pg"
-
-  parameter {
-    name  = "tls"
-    value = "enabled"
-  }
+  tags = merge(var.tags, {Name="${var.name}-${var.env}" })
 }
 
 resource "aws_docdb_cluster" "docdb" {
@@ -51,11 +45,11 @@ resource "aws_docdb_cluster" "docdb" {
   backup_retention_period = 5
   preferred_backup_window = "07:00-09:00"
   skip_final_snapshot     = true
-  db_subnet_group_name = aws_docdb_subnet_group.main.name
-  vpc_security_group_ids = [aws_security_group.main.id]
+  db_subnet_group_name    = aws_docdb_subnet_group.main.name
+  vpc_security_group_ids  = [aws_security_group.main.id]
   db_cluster_parameter_group_name = aws_docdb_cluster_parameter_group.cpg.name
-  storage_encrypted = true
-  kms_key_id = var.kms_arn
+  storage_encrypted       = true
+  kms_key_id              = var.kms_arn
   port = var.port_no
   tags = merge(var.tags, {Name="${var.name}-${var.env}" })
 }
